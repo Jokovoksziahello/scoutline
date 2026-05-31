@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="hu">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Utánpótlás Futball Profil</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Utánpótlás platform</p>
+          <h1>ScoutLine</h1>
+        </div>
+        <button class="icon-button" id="themeToggle" aria-label="Téma váltása" title="Téma váltása">☾</button>
+      </header>
+
+      <main>
+        <section class="auth-screen" id="authScreen">
+          <div class="brand-panel">
+            <div class="pitch-mark"></div>
+            <h2>Lépj be a játékosprofil létrehozásához</h2>
+            <p>A profil csak akkor jelenik meg, ha minden kötelező adatot megadsz.</p>
+          </div>
+
+          <form class="panel" id="loginForm">
+            <label>
+              Felhasználónév
+              <input id="loginName" type="text" autocomplete="name" placeholder="pl. kovacs_adam" required>
+            </label>
+            <label>
+              Jelszó
+              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Add meg az app jelszavát" required>
+            </label>
+            <label>
+              Szerep
+              <select id="loginRole" required>
+                <option value="">Válassz szerepet</option>
+                <option value="player">Játékos</option>
+                <option value="scout">Játékosmegfigyelő</option>
+              </select>
+            </label>
+            <p class="form-note" id="authNote">Csak az app jelszavával lehet belépni.</p>
+            <button type="submit" class="primary-button">Bejelentkezés</button>
+          </form>
+        </section>
+
+        <section class="profile-setup hidden" id="setupScreen">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Kötelező adatlap</p>
+              <h2>Játékosprofil létrehozása</h2>
+            </div>
+            <button class="ghost-button" id="logoutFromSetup" type="button">Kilépés</button>
+          </div>
+
+          <form class="setup-form" id="playerForm">
+            <label>
+              Név
+              <input id="playerName" type="text" required>
+            </label>
+            <label>
+              Kor
+              <input id="playerAge" type="number" min="6" max="21" required>
+            </label>
+            <label>
+              Csapat
+              <input id="playerTeam" type="text" required>
+            </label>
+            <label>
+              Poszt
+              <select id="playerPosition" required>
+                <option value="">Válassz posztot</option>
+                <option>Kapus</option>
+                <option>Védő</option>
+                <option>Középpályás</option>
+                <option>Támadó</option>
+              </select>
+            </label>
+            <label class="full-width">
+              Fotó feltöltése
+              <input id="playerPhoto" type="file" accept="image/*" required>
+            </label>
+            <div class="photo-preview full-width" id="photoPreview">
+              <span>Nincs kiválasztott kép</span>
+            </div>
+            <label>
+              Sérült vagy?
+              <select id="injuryStatus" required>
+                <option value="no">Nem</option>
+                <option value="yes">Igen</option>
+              </select>
+            </label>
+            <label>
+              Sérülés típusa
+              <input id="injuryType" type="text" placeholder="pl. bokasérülés">
+            </label>
+            <label>
+              Mennyi ideje?
+              <input id="injurySince" type="text" placeholder="pl. 2 hete">
+            </label>
+            <label>
+              Mikor épülsz fel?
+              <input id="injuryReturn" type="text" placeholder="pl. június végén">
+            </label>
+            <label>
+              Meccsek száma
+              <input id="matches" type="number" min="0" required>
+            </label>
+            <label>
+              Gólok
+              <input id="goals" type="number" min="0" required>
+            </label>
+            <label>
+              Gólpasszok
+              <input id="assists" type="number" min="0" required>
+            </label>
+            <label>
+              Sárga lapok
+              <input id="yellowCards" type="number" min="0" required>
+            </label>
+            <label>
+              Piros lapok
+              <input id="redCards" type="number" min="0" required>
+            </label>
+            <label>
+              Öngólok
+              <input id="ownGoals" type="number" min="0" required>
+            </label>
+            <p class="form-note full-width" id="formNote">A profil közzétételéhez minden adat megadása kötelező.</p>
+            <button class="primary-button full-width" type="submit">Profil közzététele</button>
+          </form>
+        </section>
+
+        <section class="app-screen hidden" id="appScreen">
+          <div class="section-head compact">
+            <div>
+              <p class="eyebrow">Bejelentkezve</p>
+              <h2 id="welcomeName">Főoldal</h2>
+            </div>
+            <button class="ghost-button" id="logoutButton" type="button">Kilépés</button>
+          </div>
+
+          <section class="view active" data-view="home">
+            <div class="panel hidden" id="scoutHomePanel">
+              <p class="eyebrow">Játékosmegfigyelő mód</p>
+              <h3>Keress játékosokat, nézz profilokat és írj véleményt.</h3>
+              <p class="muted">A játékosprofil kitöltése csak játékos szerepnél kötelező.</p>
+            </div>
+            <div class="hero-card player-only" id="featuredPlayer"></div>
+            <div class="quick-grid player-only" id="quickStats"></div>
+            <div class="panel player-only">
+              <div class="section-head mini">
+                <div>
+                  <p class="eyebrow">Következő meccs</p>
+                  <h3>Meccsadatok megadása</h3>
+                </div>
+              </div>
+              <form class="setup-form" id="nextMatchForm">
+                <label>
+                  Dátum
+                  <input id="nextMatchDate" type="date" required>
+                </label>
+                <label>
+                  Kezdési időpont
+                  <input id="nextMatchTime" type="time" required>
+                </label>
+                <label>
+                  Ellenfél csapat
+                  <input id="nextMatchOpponent" type="text" placeholder="pl. Vasas U16" required>
+                </label>
+                <label>
+                  Helyszín
+                  <input id="nextMatchLocation" type="text" placeholder="pl. Sporttelep műfüves pálya" required>
+                </label>
+                <p class="form-note full-width" id="nextMatchNote">Add meg, mikor és hol lesz a következő meccsed.</p>
+                <button class="primary-button full-width" type="submit">Következő meccs mentése</button>
+              </form>
+            </div>
+            <div class="panel player-only">
+              <div class="section-head mini">
+                <div>
+                  <p class="eyebrow">Játékosmegfigyelőknek</p>
+                  <h3>Információk magadról</h3>
+                </div>
+              </div>
+              <form id="scoutInfoForm" class="rating-form">
+                <label>
+                  Bemutatkozás, erősségek, célok
+                  <textarea id="scoutInfoText" rows="5" maxlength="700" placeholder="Írhatsz az erősségeidről, céljaidról, edzésmunkádról vagy arról, milyen játékos vagy." required></textarea>
+                </label>
+                <p class="form-note" id="scoutInfoNote">Csúnya szó nem kerülhet a bemutatkozásba.</p>
+                <button class="primary-button" type="submit">Információk mentése</button>
+              </form>
+            </div>
+            <div class="panel hidden player-only" id="ownOpinionsPanel">
+              <div class="section-head mini">
+                <h3>Rólad írt vélemények</h3>
+                <span id="ownOpinionCount"></span>
+              </div>
+              <div id="ownOpinionList" class="review-list"></div>
+            </div>
+            <div class="panel player-only">
+              <div class="section-head mini">
+                <div>
+                  <p class="eyebrow">Saját profil</p>
+                  <h3>Infók és statok frissítése</h3>
+                </div>
+                <button class="danger-button" id="deleteProfileButton" type="button">Törlés</button>
+              </div>
+              <form class="setup-form" id="editPlayerForm">
+                <label>
+                  Név
+                  <input id="editPlayerName" type="text" required>
+                </label>
+                <label>
+                  Kor
+                  <input id="editPlayerAge" type="number" min="6" max="21" required>
+                </label>
+                <label>
+                  Csapat
+                  <input id="editPlayerTeam" type="text" required>
+                </label>
+                <label>
+                  Poszt
+                  <select id="editPlayerPosition" required>
+                    <option>Kapus</option>
+                    <option>Védő</option>
+                    <option>Középpályás</option>
+                    <option>Támadó</option>
+                  </select>
+                </label>
+                <label class="full-width">
+                  Új fotó feltöltése
+                  <input id="editPlayerPhoto" type="file" accept="image/*">
+                </label>
+                <div class="photo-preview full-width" id="editPhotoPreview"></div>
+                <label>
+                  Sérült vagy?
+                  <select id="editInjuryStatus" required>
+                    <option value="no">Nem</option>
+                    <option value="yes">Igen</option>
+                  </select>
+                </label>
+                <label>
+                  Sérülés típusa
+                  <input id="editInjuryType" type="text" placeholder="pl. bokasérülés">
+                </label>
+                <label>
+                  Mennyi ideje?
+                  <input id="editInjurySince" type="text" placeholder="pl. 2 hete">
+                </label>
+                <label>
+                  Mikor épülsz fel?
+                  <input id="editInjuryReturn" type="text" placeholder="pl. június végén">
+                </label>
+                <label>
+                  Meccsek száma
+                  <input id="editMatches" type="number" min="0" required>
+                </label>
+                <label>
+                  Gólok
+                  <input id="editGoals" type="number" min="0" required>
+                </label>
+                <label>
+                  Gólpasszok
+                  <input id="editAssists" type="number" min="0" required>
+                </label>
+                <label>
+                  Sárga lapok
+                  <input id="editYellowCards" type="number" min="0" required>
+                </label>
+                <label>
+                  Piros lapok
+                  <input id="editRedCards" type="number" min="0" required>
+                </label>
+                <label>
+                  Öngólok
+                  <input id="editOwnGoals" type="number" min="0" required>
+                </label>
+                <p class="form-note full-width" id="editFormNote">Itt bármikor frissítheted a játékos adatait.</p>
+                <button class="primary-button full-width" type="submit">Módosítások mentése</button>
+              </form>
+            </div>
+          </section>
+
+          <section class="view" data-view="search">
+            <div class="panel">
+              <div class="search-grid">
+                <input id="searchName" type="search" placeholder="Név">
+                <input id="searchTeam" type="search" placeholder="Csapat">
+                <select id="searchPosition">
+                  <option value="">Minden poszt</option>
+                  <option>Kapus</option>
+                  <option>Védő</option>
+                  <option>Középpályás</option>
+                  <option>Támadó</option>
+                </select>
+                <input id="searchAge" type="number" min="6" max="21" placeholder="Kor">
+              </div>
+            </div>
+            <div id="playerResults" class="player-list"></div>
+          </section>
+
+          <section class="view" data-view="ranking">
+            <div class="panel">
+              <h3>Ranglista</h3>
+              <p class="muted">Legjobb átlagértékelés szerint rendezve.</p>
+            </div>
+            <div id="rankingList" class="player-list"></div>
+          </section>
+
+          <section class="view" data-view="favorites">
+            <div class="panel">
+              <h3>Kedvencek</h3>
+              <p class="muted">A csillaggal jelölt játékosok gyors elérése.</p>
+            </div>
+            <div id="favoritesList" class="player-list"></div>
+          </section>
+
+          <section class="view" data-view="profile">
+            <div class="panel">
+              <button class="ghost-button" id="backToSearchButton" type="button">Vissza</button>
+            </div>
+            <div class="hero-card" id="profileDetailHero"></div>
+            <div class="quick-grid" id="profileDetailStats"></div>
+            <div id="profileNextMatch"></div>
+            <div id="profileScoutInfo"></div>
+            <div class="panel">
+              <div class="section-head mini">
+                <h3>Vélemények a játékosról</h3>
+                <span id="profileOpinionCount"></span>
+              </div>
+              <form id="profileOpinionForm" class="rating-form">
+                <label>
+                  Értékelés: <strong id="profileOpinionScoreValue">8</strong>/10
+                  <input id="profileOpinionScore" type="range" min="1" max="10" value="8">
+                </label>
+                <label>
+                  Vélemény
+                  <textarea id="profileOpinionText" rows="3" minlength="3" placeholder="Írj rövid véleményt a játékosról." required></textarea>
+                </label>
+                <button class="primary-button" type="submit">Vélemény küldése</button>
+              </form>
+              <div id="profileOpinionList" class="review-list"></div>
+            </div>
+          </section>
+
+          <section class="view" data-view="match">
+            <div class="panel">
+              <div class="section-head mini">
+                <div>
+                  <p class="eyebrow">Meccsértékelés</p>
+                  <h3 id="matchTitle">U17 Liga</h3>
+                </div>
+                <strong id="matchAverage"></strong>
+              </div>
+              <form id="ratingForm" class="rating-form">
+                <label>
+                  Pontszám: <strong id="scoreValue">8</strong>/10
+                  <input id="ratingScore" type="range" min="1" max="10" value="8">
+                </label>
+                <label>
+                  Rövid indoklás
+                  <textarea id="ratingReason" rows="3" minlength="8" placeholder="Egy mondatban indokold az értékelést." required></textarea>
+                </label>
+                <button class="primary-button" type="submit">Értékelés beküldése</button>
+                <p class="form-note" id="ratingNote">Egy felhasználó csak egyszer értékelhet egy meccset.</p>
+              </form>
+            </div>
+            <div class="panel">
+              <div class="section-head mini">
+                <h3>Értékelések</h3>
+                <span id="allVotes"></span>
+              </div>
+              <div id="matchReviews" class="review-list"></div>
+            </div>
+            <div class="panel">
+              <div class="section-head mini">
+                <h3>Kommentek</h3>
+                <span id="commentCount"></span>
+              </div>
+              <form id="commentForm" class="rating-form">
+                <label>
+                  Vélemény
+                  <textarea id="commentText" rows="2" minlength="3" placeholder="Írj rövid kommentet a teljesítményről." required></textarea>
+                </label>
+                <button class="primary-button" type="submit">Komment küldése</button>
+              </form>
+              <div id="commentList" class="review-list"></div>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <nav class="bottom-nav hidden" id="bottomNav" aria-label="Fő navigáció">
+        <button class="nav-item active" data-target="home" type="button"><b>F</b><span>Főoldal</span></button>
+        <button class="nav-item" data-target="search" type="button"><b>K</b><span>Keresés</span></button>
+        <button class="nav-item" data-target="ranking" type="button"><b>R</b><span>Ranglista</span></button>
+        <button class="nav-item" data-target="favorites" type="button"><b>★</b><span>Kedvencek</span></button>
+      </nav>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1627 @@
+<!doctype html>
+<html lang="hu">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Utánpótlás Futball Profil</title>
+    <style>:root {
+  --bg: #f5f7f2;
+  --panel: #ffffff;
+  --text: #101814;
+  --muted: #647069;
+  --line: #dfe6dd;
+  --accent: #18a558;
+  --accent-strong: #0b7d3b;
+  --gold: #f4b740;
+  --danger: #d83b3b;
+  --shadow: 0 18px 45px rgba(19, 40, 28, 0.14);
+}
+
+body.dark {
+  --bg: #0d1110;
+  --panel: #171d1a;
+  --text: #f4f7f5;
+  --muted: #9aa8a0;
+  --line: #2d3832;
+  --accent: #3ee47f;
+  --accent-strong: #7dffa6;
+  --gold: #ffd36a;
+  --danger: #ff6565;
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(24, 165, 88, 0.18), transparent 32rem),
+    var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  line-height: 1.45;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(100%, 480px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 18px 16px 88px;
+}
+
+.topbar,
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.topbar {
+  margin-bottom: 18px;
+}
+
+.compact {
+  margin-bottom: 16px;
+}
+
+.mini {
+  margin-bottom: 12px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 28px;
+  line-height: 1.12;
+  font-weight: 900;
+}
+
+h2 {
+  font-size: 24px;
+  line-height: 1.18;
+  font-weight: 900;
+}
+
+h3 {
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 850;
+}
+
+.eyebrow {
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.muted,
+.form-note {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.brand-panel,
+.panel,
+.hero-card,
+.player-card,
+.stat-tile {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.brand-panel {
+  min-height: 300px;
+  padding: 24px;
+  display: grid;
+  align-content: end;
+  gap: 12px;
+  color: white;
+  background:
+    linear-gradient(160deg, rgba(6, 22, 14, 0.3), rgba(6, 22, 14, 0.9)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+    #116b39;
+  background-size: auto, 36px 36px, 36px 36px, auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.pitch-mark {
+  position: absolute;
+  inset: 34px;
+  border: 2px solid rgba(255, 255, 255, 0.34);
+  border-radius: 8px;
+}
+
+.auth-screen,
+.profile-setup {
+  display: grid;
+  gap: 14px;
+}
+
+.panel {
+  padding: 16px;
+}
+
+form {
+  display: grid;
+  gap: 14px;
+}
+
+.setup-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.photo-preview {
+  min-height: 180px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--panel), var(--bg) 36%);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel), var(--bg) 34%);
+  color: var(--text);
+  padding: 12px;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent), transparent 78%);
+}
+
+.primary-button,
+.ghost-button,
+.icon-button,
+.danger-button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.primary-button {
+  background: var(--accent);
+  color: #06120b;
+}
+
+.ghost-button,
+.icon-button {
+  background: color-mix(in srgb, var(--panel), var(--bg) 24%);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.danger-button {
+  background: color-mix(in srgb, var(--danger), transparent 84%);
+  color: var(--danger);
+  border: 1px solid color-mix(in srgb, var(--danger), transparent 45%);
+  padding: 0 12px;
+}
+
+.icon-button {
+  width: 44px;
+  font-size: 20px;
+}
+
+.hero-card {
+  display: grid;
+  grid-template-columns: 116px 1fr;
+  gap: 16px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.player-photo {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #0f6b3e;
+}
+
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gold), transparent 78%);
+  color: var(--text);
+  font-weight: 900;
+  margin-top: 8px;
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.stat-tile {
+  padding: 12px 10px;
+  min-height: 74px;
+}
+
+.stat-tile strong {
+  display: block;
+  font-size: 22px;
+}
+
+.stat-tile span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.review-list,
+.player-list {
+  display: grid;
+  gap: 10px;
+}
+
+.review {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel), var(--bg) 30%);
+}
+
+.review.top {
+  border-color: color-mix(in srgb, var(--gold), var(--line) 35%);
+}
+
+.review-head,
+.player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.review-score {
+  color: var(--accent-strong);
+  font-weight: 900;
+}
+
+.search-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.player-card {
+  padding: 12px;
+  cursor: pointer;
+}
+
+.player-card img {
+  width: 58px;
+  height: 58px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex: 0 0 auto;
+}
+
+.player-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.player-main h3 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.favorite-button {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+.rating-form {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  width: min(calc(100% - 24px), 448px);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel), transparent 4%);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.nav-item {
+  min-height: 52px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.nav-item b {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 22px;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.nav-item span {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.nav-item.active {
+  background: color-mix(in srgb, var(--accent), transparent 78%);
+  color: var(--text);
+}
+
+@media (max-width: 380px) {
+  .app-shell {
+    padding-inline: 12px;
+  }
+
+  .hero-card {
+    grid-template-columns: 92px 1fr;
+  }
+
+  .quick-grid,
+  .setup-form,
+  .search-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Utánpótlás platform</p>
+          <h1>ScoutLine</h1>
+        </div>
+        <button class="icon-button" id="themeToggle" aria-label="Téma váltása" title="Téma váltása">☾</button>
+      </header>
+
+      <main>
+        <section class="auth-screen" id="authScreen">
+          <div class="brand-panel">
+            <div class="pitch-mark"></div>
+            <h2>Lépj be a játékosprofil létrehozásához</h2>
+            <p>A profil csak akkor jelenik meg, ha minden kötelező adatot megadsz.</p>
+          </div>
+
+          <form class="panel" id="loginForm">
+            <label>
+              Felhasználónév
+              <input id="loginName" type="text" autocomplete="name" placeholder="pl. kovacs_adam" required>
+            </label>
+            <label>
+              Jelszó
+              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Add meg az app jelszavát" required>
+            </label>
+            <label>
+              Szerep
+              <select id="loginRole" required>
+                <option value="">Válassz szerepet</option>
+                <option value="player">Játékos</option>
+                <option value="scout">Játékosmegfigyelő</option>
+              </select>
+            </label>
+            <p class="form-note" id="authNote">Csak az app jelszavával lehet belépni.</p>
+            <button type="submit" class="primary-button">Bejelentkezés</button>
+          </form>
+        </section>
+
+        <section class="profile-setup hidden" id="setupScreen">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Kötelező adatlap</p>
+              <h2>Játékosprofil létrehozása</h2>
+            </div>
+            <button class="ghost-button" id="logoutFromSetup" type="button">Kilépés</button>
+          </div>
+
+          <form class="setup-form" id="playerForm">
+            <label>
+              Név
+              <input id="playerName" type="text" required>
+            </label>
+            <label>
+              Kor
+              <input id="playerAge" type="number" min="6" max="21" required>
+            </label>
+            <label>
+              Csapat
+              <input id="playerTeam" type="text" required>
+            </label>
+            <label>
+              Poszt
+              <select id="playerPosition" required>
+                <option value="">Válassz posztot</option>
+                <option>Kapus</option>
+                <option>Védő</option>
+                <option>Középpályás</option>
+                <option>Támadó</option>
+              </select>
+            </label>
+            <label class="full-width">
+              Fotó feltöltése
+              <input id="playerPhoto" type="file" accept="image/*" required>
+            </label>
+            <div class="photo-preview full-width" id="photoPreview">
+              <span>Nincs kiválasztott kép</span>
+            </div>
+            <label>
+              Sérült vagy?
+              <select id="injuryStatus" required>
+                <option value="no">Nem</option>
+                <option value="yes">Igen</option>
+              </select>
+            </label>
+            <label>
+              Sérülés típusa
+              <input id="injuryType" type="text" placeholder="pl. bokasérülés">
+            </label>
+            <label>
+              Mennyi ideje?
+              <input id="injurySince" type="text" placeholder="pl. 2 hete">
+            </label>
+            <label>
+              Mikor épülsz fel?
+              <input id="injuryReturn" type="text" placeholder="pl. június végén">
+            </label>
+            <label>
+              Meccsek száma
+              <input id="matches" type="number" min="0" required>
+            </label>
+            <label>
+              Gólok
+              <input id="goals" type="number" min="0" required>
+            </label>
+            <label>
+              Gólpasszok
+              <input id="assists" type="number" min="0" required>
+            </label>
+            <label>
+              Sárga lapok
+              <input id="yellowCards" type="number" min="0" required>
+            </label>
+            <label>
+              Piros lapok
+              <input id="redCards" type="number" min="0" required>
+            </label>
+            <label>
+              Öngólok
+              <input id="ownGoals" type="number" min="0" required>
+            </label>
+            <p class="form-note full-width" id="formNote">A profil közzétételéhez minden adat megadása kötelező.</p>
+            <button class="primary-button full-width" type="submit">Profil közzététele</button>
+          </form>
+        </section>
+
+        <section class="app-screen hidden" id="appScreen">
+          <div class="section-head compact">
+            <div>
+              <p class="eyebrow">Bejelentkezve</p>
+              <h2 id="welcomeName">Főoldal</h2>
+            </div>
+            <button class="ghost-button" id="logoutButton" type="button">Kilépés</button>
+          </div>
+
+          <section class="view active" data-view="home">
+            <div class="panel hidden" id="scoutHomePanel">
+              <p class="eyebrow">Játékosmegfigyelő mód</p>
+              <h3>Keress játékosokat, nézz profilokat és írj véleményt.</h3>
+              <p class="muted">A játékosprofil kitöltése csak játékos szerepnél kötelező.</p>
+            </div>
+            <div class="hero-card player-only" id="featuredPlayer"></div>
+            <div class="quick-grid player-only" id="quickStats"></div>
+            <div class="panel player-only">
+              <div class="section-head mini">
+                <div>
+                  <p class="eyebrow">Következő meccs</p>
+                  <h3>Meccsadatok megadása</h3>
+                </div>
+              </div>
+              <form class="setup-form" id="nextMatchForm">
+                <label>
+                  Dátum
+                  <input id="nextMatchDate" type="date" required>
+                </label>
+                <label>
+                  Kezdési időpont
+                  <input id="nextMatchTime" type="time" required>
+                </label>
+                <label>
+                  Ellenfél csapat
+                  <input id="nextMatchOpponent" type="text" placeholder="pl. Vasas U16" required>
+                </label>
+                <label>
+                  Helyszín
+                  <input id="nextMatchLocation" type="text" placeholder="pl. Sporttelep műfüves pálya" required>
+                </label>
+                <p class="form-note full-width" id="nextMatchNote">Add meg, mikor és hol lesz a következő meccsed.</p>
+                <button class="primary-button full-width" type="submit">Következő meccs mentése</button>
+              </form>
+            </div>
+            <div class="panel player-only">
+              <div class="section-head mini">
+                <div>
+                  <p class="eyebrow">Játékosmegfigyelőknek</p>
+                  <h3>Információk magadról</h3>
+                </div>
+              </div>
+              <form id="scoutInfoForm" class="rating-form">
+                <label>
+                  Bemutatkozás, erősségek, célok
+                  <textarea id="scoutInfoText" rows="5" maxlength="700" placeholder="Írhatsz az erősségeidről, céljaidról, edzésmunkádról vagy arról, milyen játékos vagy." required></textarea>
+                </label>
+                <p class="form-note" id="scoutInfoNote">Csúnya szó nem kerülhet a bemutatkozásba.</p>
+                <button class="primary-button" type="submit">Információk mentése</button>
+              </form>
+            </div>
+            <div class="panel hidden player-only" id="ownOpinionsPanel">
+              <div class="section-head mini">
+                <h3>Rólad írt vélemények</h3>
+                <span id="ownOpinionCount"></span>
+              </div>
+              <div id="ownOpinionList" class="review-list"></div>
+            </div>
+            <div class="panel player-only">
+              <div class="section-head mini">
+                <div>
+                  <p class="eyebrow">Saját profil</p>
+                  <h3>Infók és statok frissítése</h3>
+                </div>
+                <button class="danger-button" id="deleteProfileButton" type="button">Törlés</button>
+              </div>
+              <form class="setup-form" id="editPlayerForm">
+                <label>
+                  Név
+                  <input id="editPlayerName" type="text" required>
+                </label>
+                <label>
+                  Kor
+                  <input id="editPlayerAge" type="number" min="6" max="21" required>
+                </label>
+                <label>
+                  Csapat
+                  <input id="editPlayerTeam" type="text" required>
+                </label>
+                <label>
+                  Poszt
+                  <select id="editPlayerPosition" required>
+                    <option>Kapus</option>
+                    <option>Védő</option>
+                    <option>Középpályás</option>
+                    <option>Támadó</option>
+                  </select>
+                </label>
+                <label class="full-width">
+                  Új fotó feltöltése
+                  <input id="editPlayerPhoto" type="file" accept="image/*">
+                </label>
+                <div class="photo-preview full-width" id="editPhotoPreview"></div>
+                <label>
+                  Sérült vagy?
+                  <select id="editInjuryStatus" required>
+                    <option value="no">Nem</option>
+                    <option value="yes">Igen</option>
+                  </select>
+                </label>
+                <label>
+                  Sérülés típusa
+                  <input id="editInjuryType" type="text" placeholder="pl. bokasérülés">
+                </label>
+                <label>
+                  Mennyi ideje?
+                  <input id="editInjurySince" type="text" placeholder="pl. 2 hete">
+                </label>
+                <label>
+                  Mikor épülsz fel?
+                  <input id="editInjuryReturn" type="text" placeholder="pl. június végén">
+                </label>
+                <label>
+                  Meccsek száma
+                  <input id="editMatches" type="number" min="0" required>
+                </label>
+                <label>
+                  Gólok
+                  <input id="editGoals" type="number" min="0" required>
+                </label>
+                <label>
+                  Gólpasszok
+                  <input id="editAssists" type="number" min="0" required>
+                </label>
+                <label>
+                  Sárga lapok
+                  <input id="editYellowCards" type="number" min="0" required>
+                </label>
+                <label>
+                  Piros lapok
+                  <input id="editRedCards" type="number" min="0" required>
+                </label>
+                <label>
+                  Öngólok
+                  <input id="editOwnGoals" type="number" min="0" required>
+                </label>
+                <p class="form-note full-width" id="editFormNote">Itt bármikor frissítheted a játékos adatait.</p>
+                <button class="primary-button full-width" type="submit">Módosítások mentése</button>
+              </form>
+            </div>
+          </section>
+
+          <section class="view" data-view="search">
+            <div class="panel">
+              <div class="search-grid">
+                <input id="searchName" type="search" placeholder="Név">
+                <input id="searchTeam" type="search" placeholder="Csapat">
+                <select id="searchPosition">
+                  <option value="">Minden poszt</option>
+                  <option>Kapus</option>
+                  <option>Védő</option>
+                  <option>Középpályás</option>
+                  <option>Támadó</option>
+                </select>
+                <input id="searchAge" type="number" min="6" max="21" placeholder="Kor">
+              </div>
+            </div>
+            <div id="playerResults" class="player-list"></div>
+          </section>
+
+          <section class="view" data-view="ranking">
+            <div class="panel">
+              <h3>Ranglista</h3>
+              <p class="muted">Legjobb átlagértékelés szerint rendezve.</p>
+            </div>
+            <div id="rankingList" class="player-list"></div>
+          </section>
+
+          <section class="view" data-view="favorites">
+            <div class="panel">
+              <h3>Kedvencek</h3>
+              <p class="muted">A csillaggal jelölt játékosok gyors elérése.</p>
+            </div>
+            <div id="favoritesList" class="player-list"></div>
+          </section>
+
+          <section class="view" data-view="profile">
+            <div class="panel">
+              <button class="ghost-button" id="backToSearchButton" type="button">Vissza</button>
+            </div>
+            <div class="hero-card" id="profileDetailHero"></div>
+            <div class="quick-grid" id="profileDetailStats"></div>
+            <div id="profileNextMatch"></div>
+            <div id="profileScoutInfo"></div>
+            <div class="panel">
+              <div class="section-head mini">
+                <h3>Vélemények a játékosról</h3>
+                <span id="profileOpinionCount"></span>
+              </div>
+              <form id="profileOpinionForm" class="rating-form">
+                <label>
+                  Értékelés: <strong id="profileOpinionScoreValue">8</strong>/10
+                  <input id="profileOpinionScore" type="range" min="1" max="10" value="8">
+                </label>
+                <label>
+                  Vélemény
+                  <textarea id="profileOpinionText" rows="3" minlength="3" placeholder="Írj rövid véleményt a játékosról." required></textarea>
+                </label>
+                <button class="primary-button" type="submit">Vélemény küldése</button>
+              </form>
+              <div id="profileOpinionList" class="review-list"></div>
+            </div>
+          </section>
+
+          <section class="view" data-view="match">
+            <div class="panel">
+              <div class="section-head mini">
+                <div>
+                  <p class="eyebrow">Meccsértékelés</p>
+                  <h3 id="matchTitle">U17 Liga</h3>
+                </div>
+                <strong id="matchAverage"></strong>
+              </div>
+              <form id="ratingForm" class="rating-form">
+                <label>
+                  Pontszám: <strong id="scoreValue">8</strong>/10
+                  <input id="ratingScore" type="range" min="1" max="10" value="8">
+                </label>
+                <label>
+                  Rövid indoklás
+                  <textarea id="ratingReason" rows="3" minlength="8" placeholder="Egy mondatban indokold az értékelést." required></textarea>
+                </label>
+                <button class="primary-button" type="submit">Értékelés beküldése</button>
+                <p class="form-note" id="ratingNote">Egy felhasználó csak egyszer értékelhet egy meccset.</p>
+              </form>
+            </div>
+            <div class="panel">
+              <div class="section-head mini">
+                <h3>Értékelések</h3>
+                <span id="allVotes"></span>
+              </div>
+              <div id="matchReviews" class="review-list"></div>
+            </div>
+            <div class="panel">
+              <div class="section-head mini">
+                <h3>Kommentek</h3>
+                <span id="commentCount"></span>
+              </div>
+              <form id="commentForm" class="rating-form">
+                <label>
+                  Vélemény
+                  <textarea id="commentText" rows="2" minlength="3" placeholder="Írj rövid kommentet a teljesítményről." required></textarea>
+                </label>
+                <button class="primary-button" type="submit">Komment küldése</button>
+              </form>
+              <div id="commentList" class="review-list"></div>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <nav class="bottom-nav hidden" id="bottomNav" aria-label="Fő navigáció">
+        <button class="nav-item active" data-target="home" type="button"><b>F</b><span>Főoldal</span></button>
+        <button class="nav-item" data-target="search" type="button"><b>K</b><span>Keresés</span></button>
+        <button class="nav-item" data-target="ranking" type="button"><b>R</b><span>Ranglista</span></button>
+        <button class="nav-item" data-target="favorites" type="button"><b>★</b><span>Kedvencek</span></button>
+      </nav>
+    </div>
+
+    <script>const STORAGE_KEY = "scoutline-state-v2";
+const APP_PASSWORD = "foci2026";
+const ONLINE_MODE = location.protocol !== "file:";
+const SHARED_KEYS = ["players", "reviews", "comments", "opinions"];
+const SYNC_INTERVAL_MS = 3000;
+
+const defaultState = {
+  currentUser: "",
+  currentRole: "",
+  darkMode: false,
+  players: [],
+  reviews: [],
+  comments: [],
+  opinions: [],
+  favorites: [],
+};
+
+let state = loadState();
+let pendingPhoto = "";
+let pendingEditPhoto = "";
+let selectedProfileId = "";
+let lastSharedSnapshot = "";
+let isSyncing = false;
+
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+const authScreen = $("#authScreen");
+const setupScreen = $("#setupScreen");
+const appScreen = $("#appScreen");
+const bottomNav = $("#bottomNav");
+
+function loadState() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const loaded = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultState));
+  const normalized = { ...defaultState, ...loaded };
+  normalized.players = (normalized.players || []).filter((player) => player.owner);
+  const playerIds = new Set(normalized.players.map((player) => player.id));
+  normalized.reviews = (normalized.reviews || []).filter((review) => playerIds.has(review.playerId));
+  normalized.comments = normalized.comments || [];
+  normalized.opinions = (normalized.opinions || []).filter((opinion) => playerIds.has(opinion.playerId));
+  normalized.favorites = (normalized.favorites || []).filter((id) => playerIds.has(id));
+  if (normalized.currentUser && !normalized.currentRole) {
+    normalized.currentRole = normalized.players.some((player) => player.owner === normalized.currentUser) ? "player" : "scout";
+  }
+  return normalized;
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  saveSharedState();
+}
+
+function saveLocalOnly() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function sharedPayload() {
+  return SHARED_KEYS.reduce((payload, key) => {
+    payload[key] = state[key] || [];
+    return payload;
+  }, {});
+}
+
+async function loadSharedState() {
+  if (!ONLINE_MODE || isSyncing) return;
+  isSyncing = true;
+
+  try {
+    const response = await fetch("/api/state", { cache: "no-store" });
+    if (!response.ok) return;
+    const shared = await response.json();
+    const nextSnapshot = JSON.stringify(sharedPayloadFrom(shared));
+    if (nextSnapshot === lastSharedSnapshot) return;
+
+    SHARED_KEYS.forEach((key) => {
+      state[key] = shared[key] || [];
+    });
+    lastSharedSnapshot = nextSnapshot;
+    saveLocalOnly();
+    if (state.currentUser) {
+      renderAll();
+    }
+  } catch (error) {
+    console.warn("Online adatok betöltése nem sikerült.", error);
+  } finally {
+    isSyncing = false;
+  }
+}
+
+async function saveSharedState() {
+  if (!ONLINE_MODE) return;
+  const snapshot = JSON.stringify(sharedPayload());
+
+  try {
+    await fetch("/api/state", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-app-password": APP_PASSWORD,
+      },
+      body: snapshot,
+    });
+    lastSharedSnapshot = snapshot;
+  } catch (error) {
+    console.warn("Online mentés nem sikerült.", error);
+  }
+}
+
+function sharedPayloadFrom(source) {
+  return SHARED_KEYS.reduce((payload, key) => {
+    payload[key] = source[key] || [];
+    return payload;
+  }, {});
+}
+
+function getMyPlayer() {
+  return state.players.find((player) => player.owner === state.currentUser);
+}
+
+function averageFor(playerId) {
+  const reviews = state.reviews.filter((review) => review.playerId === playerId);
+  if (!reviews.length) return 0;
+  return reviews.reduce((sum, review) => sum + Number(review.score), 0) / reviews.length;
+}
+
+function votesFor(playerId) {
+  return state.reviews.filter((review) => review.playerId === playerId).length;
+}
+
+function showScreen() {
+  document.body.classList.toggle("dark", state.darkMode);
+  $("#themeToggle").textContent = state.darkMode ? "Világos" : "Sötét";
+
+  if (!state.currentUser) {
+    authScreen.classList.remove("hidden");
+    setupScreen.classList.add("hidden");
+    appScreen.classList.add("hidden");
+    bottomNav.classList.add("hidden");
+    return;
+  }
+
+  if (state.currentRole === "player" && !getMyPlayer()) {
+    authScreen.classList.add("hidden");
+    setupScreen.classList.remove("hidden");
+    appScreen.classList.add("hidden");
+    bottomNav.classList.add("hidden");
+    return;
+  }
+
+  authScreen.classList.add("hidden");
+  setupScreen.classList.add("hidden");
+  appScreen.classList.remove("hidden");
+  bottomNav.classList.remove("hidden");
+  $("#welcomeName").textContent = `Szia, ${state.currentUser}`;
+  const isPlayer = state.currentRole === "player";
+  $$(".player-only").forEach((item) => item.classList.toggle("hidden", !isPlayer));
+  $("#scoutHomePanel").classList.toggle("hidden", isPlayer);
+  renderAll();
+}
+
+function renderAll() {
+  renderFeatured();
+  renderNextMatchForm();
+  renderScoutInfoForm();
+  renderSearchResults();
+  renderRanking();
+  renderFavorites();
+  renderMatch();
+  renderEditForm();
+  renderOwnOpinions();
+  renderProfileDetail();
+}
+
+function renderFeatured() {
+  const player = getMyPlayer();
+  if (!player) return;
+
+  const stats = player.stats;
+  $("#featuredPlayer").innerHTML = `
+    <img class="player-photo" src="${player.photo}" alt="${player.name}">
+    <div>
+      <p class="eyebrow">${player.team} • ${player.position}</p>
+      <h2>${player.name}</h2>
+      <p class="muted">${player.age} éves játékos</p>
+      <span class="rating-badge">★ ${averageFor(player.id).toFixed(1)} • ${votesFor(player.id)} szavazat</span>
+      ${injurySummary(player)}
+      ${player.nextMatch ? `<p class="muted">Következő meccs: ${player.nextMatch.date} ${player.nextMatch.time}, ${player.nextMatch.opponent}</p>` : ""}
+      ${player.scoutInfo ? `<p class="muted">${player.scoutInfo}</p>` : ""}
+    </div>
+  `;
+  $("#quickStats").innerHTML = [
+    ["Meccsek", stats.matches],
+    ["Gólok", stats.goals],
+    ["Gólpasszok", stats.assists],
+    ["Sárga", stats.yellowCards],
+    ["Piros", stats.redCards],
+    ["Öngólok", stats.ownGoals],
+  ].map(([label, value]) => `<div class="stat-tile"><strong>${value}</strong><span>${label}</span></div>`).join("");
+}
+
+function reviewTemplate(review) {
+  const player = state.players.find((item) => item.id === review.playerId);
+  const isTop = Number(review.score) >= 9;
+  return `
+    <article class="review ${isTop ? "top" : ""}">
+      <div class="review-head">
+        <strong>${player ? player.name : "Játékos"}</strong>
+        <span class="review-score">${review.score}/10</span>
+      </div>
+      <p class="muted">${review.reason}</p>
+      ${isTop ? '<p class="eyebrow">Kiemelt értékelés</p>' : ""}
+    </article>
+  `;
+}
+
+function renderNextMatchForm() {
+  const player = getMyPlayer();
+  if (!player) return;
+
+  const nextMatch = player.nextMatch || {};
+  $("#nextMatchDate").value = nextMatch.date || "";
+  $("#nextMatchTime").value = nextMatch.time || "";
+  $("#nextMatchOpponent").value = nextMatch.opponent || "";
+  $("#nextMatchLocation").value = nextMatch.location || "";
+}
+
+function injurySummary(player) {
+  if (!player.injury || player.injury.status !== "yes") return "";
+  const details = [
+    player.injury.type,
+    player.injury.since ? `${player.injury.since} óta` : "",
+    player.injury.returnDate ? `várható felépülés: ${player.injury.returnDate}` : "",
+  ].filter(Boolean).join(" • ");
+  return `<p class="muted">Sérült: ${details || "igen"}</p>`;
+}
+
+function renderScoutInfoForm() {
+  const player = getMyPlayer();
+  if (!player) return;
+  $("#scoutInfoText").value = player.scoutInfo || "";
+}
+
+function renderSearchResults() {
+  const name = $("#searchName").value.trim().toLowerCase();
+  const team = $("#searchTeam").value.trim().toLowerCase();
+  const position = $("#searchPosition").value;
+  const age = $("#searchAge").value;
+  const results = state.players.filter((player) => {
+    return (!name || player.name.toLowerCase().includes(name))
+      && (!team || player.team.toLowerCase().includes(team))
+      && (!position || player.position === position)
+      && (!age || String(player.age) === age);
+  });
+  $("#playerResults").innerHTML = results.map(playerCard).join("") || emptyText("Nincs találat.");
+}
+
+function renderRanking() {
+  const ranked = [...state.players].sort((a, b) => averageFor(b.id) - averageFor(a.id));
+  $("#rankingList").innerHTML = ranked.map((player, index) => playerCard(player, index + 1)).join("") || emptyText("Még nincs ranglista, mert nincs létrehozott játékos.");
+}
+
+function renderFavorites() {
+  const favorites = state.players.filter((player) => state.favorites.includes(player.id));
+  $("#favoritesList").innerHTML = favorites.map(playerCard).join("") || emptyText("Még nincs kedvenc játékos.");
+}
+
+function playerCard(player, rank = "") {
+  const favorite = state.favorites.includes(player.id);
+  return `
+    <article class="player-card" data-open-profile="${player.id}">
+      <div class="player-main">
+        <img src="${player.photo}" alt="${player.name}">
+        <div>
+          <p class="eyebrow">${rank ? `${rank}. hely • ` : ""}${player.position}</p>
+          <h3>${player.name}</h3>
+          <p class="muted">${player.team}, ${player.age} éves • ★ ${averageFor(player.id).toFixed(1)}</p>
+        </div>
+      </div>
+      <button class="favorite-button" data-favorite="${player.id}" type="button">${favorite ? "★" : "☆"}</button>
+    </article>
+  `;
+}
+
+function renderProfileDetail() {
+  const player = state.players.find((item) => item.id === selectedProfileId);
+  if (!player || !$("#profileDetailHero")) {
+    $("#profileDetailHero").innerHTML = "";
+    $("#profileDetailStats").innerHTML = "";
+    $("#profileNextMatch").innerHTML = "";
+    $("#profileScoutInfo").innerHTML = "";
+    $("#profileOpinionList").innerHTML = emptyText("Válassz ki egy játékost a profil megnyitásához.");
+    $("#profileOpinionCount").textContent = "";
+    return;
+  }
+
+  $("#profileDetailHero").innerHTML = `
+    <img class="player-photo" src="${player.photo}" alt="${player.name}">
+    <div>
+      <p class="eyebrow">${player.team} • ${player.position}</p>
+      <h2>${player.name}</h2>
+      <p class="muted">${player.age} éves játékos</p>
+      <span class="rating-badge">★ ${averageFor(player.id).toFixed(1)} • ${votesFor(player.id)} szavazat</span>
+      ${injurySummary(player)}
+      ${player.scoutInfo ? `<p class="muted">${player.scoutInfo}</p>` : ""}
+    </div>
+  `;
+
+  $("#profileDetailStats").innerHTML = [
+    ["Meccsek", player.stats.matches],
+    ["Gólok", player.stats.goals],
+    ["Gólpasszok", player.stats.assists],
+    ["Sárga", player.stats.yellowCards],
+    ["Piros", player.stats.redCards],
+    ["Öngólok", player.stats.ownGoals],
+  ].map(([label, value]) => `<div class="stat-tile"><strong>${value}</strong><span>${label}</span></div>`).join("");
+
+  $("#profileNextMatch").innerHTML = player.nextMatch ? `
+      <div class="panel">
+        <p class="eyebrow">Következő meccs</p>
+        <h3>${player.nextMatch.opponent}</h3>
+        <p class="muted">${player.nextMatch.date} • ${player.nextMatch.time} • ${player.nextMatch.location}</p>
+      </div>
+    ` : "";
+
+  $("#profileScoutInfo").innerHTML = player.scoutInfo ? `
+      <div class="panel">
+        <p class="eyebrow">Játékosmegfigyelőknek</p>
+        <h3>Információk a játékosról</h3>
+        <p class="muted">${player.scoutInfo}</p>
+      </div>
+    ` : "";
+
+  const opinions = state.opinions.filter((opinion) => opinion.playerId === player.id).reverse();
+  $("#profileOpinionForm").dataset.playerId = player.id;
+  $("#profileOpinionCount").textContent = `${opinions.length} vélemény`;
+  $("#profileOpinionList").innerHTML = opinions.map((opinion) => `
+    <article class="review">
+      <div class="review-head">
+        <strong>${opinion.user}</strong>
+        <span class="review-score">${opinion.score || "-"}/10</span>
+      </div>
+      <p class="muted">${opinion.text}</p>
+    </article>
+  `).join("") || emptyText("Még nincs vélemény erről a játékosról.");
+}
+
+function renderOwnOpinions() {
+  const player = getMyPlayer();
+  if (!player) return;
+
+  const opinions = state.opinions.filter((opinion) => opinion.playerId === player.id).reverse();
+  const panel = $("#ownOpinionsPanel");
+
+  if (!opinions.length) {
+    panel.classList.add("hidden");
+    $("#ownOpinionList").innerHTML = "";
+    $("#ownOpinionCount").textContent = "";
+    return;
+  }
+
+  panel.classList.remove("hidden");
+  $("#ownOpinionCount").textContent = `${opinions.length} vélemény`;
+  $("#ownOpinionList").innerHTML = opinions.map((opinion) => `
+    <article class="review">
+      <div class="review-head">
+        <strong>${opinion.user}</strong>
+        <span class="review-score">${opinion.score || "-"}/10</span>
+      </div>
+      <p class="muted">${opinion.text}</p>
+    </article>
+  `).join("");
+}
+
+function renderMatch() {
+  const player = getMyPlayer();
+  if (!player) return;
+
+  const matchId = `match-${player.id}-latest`;
+  const reviews = state.reviews.filter((review) => review.matchId === matchId);
+  const average = reviews.length ? reviews.reduce((sum, review) => sum + Number(review.score), 0) / reviews.length : 0;
+  const alreadyRated = state.reviews.some((review) => review.matchId === matchId && review.user === state.currentUser);
+
+  $("#matchTitle").textContent = `${player.name} • legutóbbi meccs`;
+  $("#matchAverage").textContent = reviews.length ? `★ ${average.toFixed(1)}` : "Nincs értékelés";
+  $("#allVotes").textContent = `${reviews.length} szavazat`;
+  $("#matchReviews").innerHTML = reviews.map(reviewTemplate).join("") || emptyText("Erre a meccsre még nincs értékelés.");
+  renderComments(matchId);
+  $("#ratingForm").dataset.matchId = matchId;
+  $("#ratingForm").dataset.playerId = player.id;
+  $("#commentForm").dataset.matchId = matchId;
+  $("#ratingForm").querySelector("button").disabled = alreadyRated;
+  $("#ratingNote").textContent = alreadyRated
+    ? "Ezt a meccset már értékelted."
+    : "Egy felhasználó csak egyszer értékelhet egy meccset.";
+}
+
+function renderComments(matchId) {
+  const comments = (state.comments || []).filter((comment) => comment.matchId === matchId).reverse();
+  $("#commentCount").textContent = `${comments.length} komment`;
+  $("#commentList").innerHTML = comments.map((comment) => `
+    <article class="review">
+      <div class="review-head">
+        <strong>${comment.user}</strong>
+      </div>
+      <p class="muted">${comment.text}</p>
+    </article>
+  `).join("") || emptyText("Még nincs komment ehhez a meccshez.");
+}
+
+function renderEditForm() {
+  const player = getMyPlayer();
+  if (!player) return;
+
+  $("#editPlayerName").value = player.name;
+  $("#editPlayerAge").value = player.age;
+  $("#editPlayerTeam").value = player.team;
+  $("#editPlayerPosition").value = player.position;
+  $("#editInjuryStatus").value = player.injury?.status || "no";
+  $("#editInjuryType").value = player.injury?.type || "";
+  $("#editInjurySince").value = player.injury?.since || "";
+  $("#editInjuryReturn").value = player.injury?.returnDate || "";
+  $("#editMatches").value = player.stats.matches;
+  $("#editGoals").value = player.stats.goals;
+  $("#editAssists").value = player.stats.assists;
+  $("#editYellowCards").value = player.stats.yellowCards;
+  $("#editRedCards").value = player.stats.redCards;
+  $("#editOwnGoals").value = player.stats.ownGoals;
+  $("#editPhotoPreview").innerHTML = `<img src="${pendingEditPhoto || player.photo}" alt="${player.name} fotója">`;
+}
+
+function emptyText(text) {
+  return `<p class="muted">${text}</p>`;
+}
+
+function hasBadWord(text) {
+  const blockedWords = [
+    "bazdmeg",
+    "baszdmeg",
+    "geci",
+    "kurva",
+    "picsa",
+    "fasz",
+    "szar",
+  ];
+  const normalized = text.toLowerCase();
+  return blockedWords.some((word) => normalized.includes(word));
+}
+
+$("#playerPhoto").addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  pendingPhoto = "";
+
+  if (!file) {
+    $("#photoPreview").innerHTML = "<span>Nincs kiválasztott kép</span>";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    pendingPhoto = reader.result;
+    $("#photoPreview").innerHTML = `<img src="${pendingPhoto}" alt="Feltöltött játékosfotó előnézete">`;
+  });
+  reader.readAsDataURL(file);
+});
+
+$("#editPlayerPhoto").addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  pendingEditPhoto = "";
+
+  if (!file) {
+    renderEditForm();
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    pendingEditPhoto = reader.result;
+    $("#editPhotoPreview").innerHTML = `<img src="${pendingEditPhoto}" alt="Új játékosfotó előnézete">`;
+  });
+  reader.readAsDataURL(file);
+});
+
+$("#loginForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if ($("#loginPassword").value !== APP_PASSWORD) {
+    $("#authNote").textContent = "Hibás jelszó.";
+    return;
+  }
+
+  state.currentUser = $("#loginName").value.trim();
+  state.currentRole = $("#loginRole").value;
+  saveState();
+  showScreen();
+});
+
+$("#playerForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!event.currentTarget.checkValidity()) return;
+  if (!pendingPhoto) {
+    $("#formNote").textContent = "A profil közzétételéhez játékosfotót is fel kell tölteni.";
+    return;
+  }
+
+  const player = {
+    id: `p-${Date.now()}`,
+    owner: state.currentUser,
+    name: $("#playerName").value.trim(),
+    age: Number($("#playerAge").value),
+    team: $("#playerTeam").value.trim(),
+    position: $("#playerPosition").value,
+    photo: pendingPhoto,
+    scoutInfo: "",
+    injury: {
+      status: $("#injuryStatus").value,
+      type: $("#injuryType").value.trim(),
+      since: $("#injurySince").value.trim(),
+      returnDate: $("#injuryReturn").value.trim(),
+    },
+    stats: {
+      matches: Number($("#matches").value),
+      goals: Number($("#goals").value),
+      assists: Number($("#assists").value),
+      yellowCards: Number($("#yellowCards").value),
+      redCards: Number($("#redCards").value),
+      ownGoals: Number($("#ownGoals").value),
+    },
+  };
+
+  state.players.push(player);
+  pendingPhoto = "";
+  saveState();
+  showScreen();
+});
+
+$("#editPlayerForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!event.currentTarget.checkValidity()) return;
+
+  const player = getMyPlayer();
+  if (!player) return;
+
+  player.name = $("#editPlayerName").value.trim();
+  player.age = Number($("#editPlayerAge").value);
+  player.team = $("#editPlayerTeam").value.trim();
+  player.position = $("#editPlayerPosition").value;
+  player.photo = pendingEditPhoto || player.photo;
+  player.injury = {
+    status: $("#editInjuryStatus").value,
+    type: $("#editInjuryType").value.trim(),
+    since: $("#editInjurySince").value.trim(),
+    returnDate: $("#editInjuryReturn").value.trim(),
+  };
+  player.stats = {
+    matches: Number($("#editMatches").value),
+    goals: Number($("#editGoals").value),
+    assists: Number($("#editAssists").value),
+    yellowCards: Number($("#editYellowCards").value),
+    redCards: Number($("#editRedCards").value),
+    ownGoals: Number($("#editOwnGoals").value),
+  };
+
+  pendingEditPhoto = "";
+  $("#editPlayerPhoto").value = "";
+  $("#editFormNote").textContent = "Mentve.";
+  saveState();
+  renderAll();
+});
+
+$("#nextMatchForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!event.currentTarget.checkValidity()) return;
+
+  const player = getMyPlayer();
+  if (!player) return;
+
+  player.nextMatch = {
+    date: $("#nextMatchDate").value,
+    time: $("#nextMatchTime").value,
+    opponent: $("#nextMatchOpponent").value.trim(),
+    location: $("#nextMatchLocation").value.trim(),
+  };
+
+  $("#nextMatchNote").textContent = "Következő meccs mentve.";
+  saveState();
+  renderAll();
+});
+
+$("#scoutInfoForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const player = getMyPlayer();
+  const text = $("#scoutInfoText").value.trim();
+  if (!player || !text) return;
+
+  if (hasBadWord(text)) {
+    $("#scoutInfoNote").textContent = "Ezt nem lehet menteni, mert csúnya szót tartalmaz.";
+    return;
+  }
+
+  player.scoutInfo = text;
+  $("#scoutInfoNote").textContent = "Információk mentve.";
+  saveState();
+  renderAll();
+});
+
+$("#deleteProfileButton").addEventListener("click", () => {
+  const player = getMyPlayer();
+  if (!player) return;
+  const confirmed = confirm("Biztosan törlöd a profilodat? Ez az értékeléseket és kommenteket is eltávolítja.");
+  if (!confirmed) return;
+
+  const matchId = `match-${player.id}-latest`;
+  state.players = state.players.filter((item) => item.id !== player.id);
+  state.reviews = state.reviews.filter((review) => review.playerId !== player.id);
+  state.comments = state.comments.filter((comment) => comment.matchId !== matchId);
+  state.opinions = state.opinions.filter((opinion) => opinion.playerId !== player.id);
+  state.favorites = state.favorites.filter((id) => id !== player.id);
+  state.currentUser = "";
+  pendingPhoto = "";
+  pendingEditPhoto = "";
+  saveState();
+  showScreen();
+});
+
+$("#ratingScore").addEventListener("input", (event) => {
+  $("#scoreValue").textContent = event.target.value;
+});
+
+$("#profileOpinionScore").addEventListener("input", (event) => {
+  $("#profileOpinionScoreValue").textContent = event.target.value;
+});
+
+$("#ratingForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const matchId = form.dataset.matchId;
+  const playerId = form.dataset.playerId;
+  const alreadyRated = state.reviews.some((review) => review.matchId === matchId && review.user === state.currentUser);
+  const reason = $("#ratingReason").value.trim();
+
+  if (alreadyRated || !reason || hasBadWord(reason)) return;
+
+  state.reviews.push({
+    id: `r-${Date.now()}`,
+    matchId,
+    playerId,
+    user: state.currentUser,
+    score: Number($("#ratingScore").value),
+    reason,
+  });
+  $("#ratingReason").value = "";
+  saveState();
+  renderAll();
+});
+
+$("#commentForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const text = $("#commentText").value.trim();
+  if (!text || hasBadWord(text)) return;
+
+  state.comments.push({
+    id: `c-${Date.now()}`,
+    matchId: event.currentTarget.dataset.matchId,
+    user: state.currentUser,
+    text,
+  });
+  $("#commentText").value = "";
+  saveState();
+  renderAll();
+});
+
+$("#profileOpinionForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const playerId = event.currentTarget.dataset.playerId;
+  const text = $("#profileOpinionText").value.trim();
+  if (!playerId || !text || hasBadWord(text)) return;
+
+  state.opinions.push({
+    id: `o-${Date.now()}`,
+    playerId,
+    user: state.currentUser,
+    score: Number($("#profileOpinionScore").value),
+    text,
+  });
+  $("#profileOpinionText").value = "";
+  $("#profileOpinionScore").value = 8;
+  $("#profileOpinionScoreValue").textContent = "8";
+  saveState();
+  renderAll();
+});
+
+$("#themeToggle").addEventListener("click", () => {
+  state.darkMode = !state.darkMode;
+  saveState();
+  showScreen();
+});
+
+$("#logoutButton").addEventListener("click", logout);
+$("#logoutFromSetup").addEventListener("click", logout);
+
+function logout() {
+  state.currentUser = "";
+  state.currentRole = "";
+  saveState();
+  showScreen();
+}
+
+function openView(viewName) {
+  $$(".nav-item").forEach((item) => item.classList.toggle("active", item.dataset.target === viewName));
+  $$(".view").forEach((view) => view.classList.toggle("active", view.dataset.view === viewName));
+  renderAll();
+}
+
+bottomNav.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-target]");
+  if (!button) return;
+  openView(button.dataset.target);
+});
+
+appScreen.addEventListener("click", (event) => {
+  const favoriteButton = event.target.closest("[data-favorite]");
+  if (favoriteButton) {
+    const playerId = favoriteButton.dataset.favorite;
+    state.favorites = state.favorites.includes(playerId)
+      ? state.favorites.filter((id) => id !== playerId)
+      : [...state.favorites, playerId];
+    saveState();
+    renderAll();
+    return;
+  }
+
+  const profileCard = event.target.closest("[data-open-profile]");
+  if (!profileCard) return;
+  selectedProfileId = profileCard.dataset.openProfile;
+  openView("profile");
+});
+
+$("#backToSearchButton").addEventListener("click", () => {
+  openView("search");
+});
+
+["#searchName", "#searchTeam", "#searchPosition", "#searchAge"].forEach((selector) => {
+  $(selector).addEventListener("input", renderSearchResults);
+});
+
+showScreen();
+loadSharedState();
+if (ONLINE_MODE) {
+  setInterval(loadSharedState, SYNC_INTERVAL_MS);
+}
+</script>
+  </body>
+</html>
