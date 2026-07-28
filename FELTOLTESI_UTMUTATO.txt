@@ -1,0 +1,181 @@
+const money=n=>new Intl.NumberFormat('hu-HU').format(n)+' Ft';
+let token=sessionStorage.getItem('csitiToken')||'',soundOn=false,currentOrders=[],eventSource=null,lastOrderId=null,audioCtx=null,pollTimer=null;
+const $=s=>document.querySelector(s);
+
+function toast(t){
+  const e=$('#toast');e.textContent=t;e.classList.add('show');
+  setTimeout(()=>e.classList.remove('show'),2500);
+}
+async function api(url,opt={}){
+  opt.headers={...(opt.headers||{}),Authorization:'Bearer '+token};
+  const r=await fetch(url,opt);
+  const j=await r.json();
+  if(!r.ok)throw Error(j.error||'Hiba történt');
+  return j;
+}
+function statusClass(status){
+  if(status==='Készítés alatt')return 'status-making';
+  if(status==='Kész')return 'status-ready';
+  if(status==='Átadva')return 'status-delivered';
+  return 'status-new';
+}
+async function notifyOrder(order){
+  if(!soundOn)return;
+  try{
+    unlockAudio();const c=audioCtx,o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=980;g.gain.value=.5;o.start();o.stop(c.currentTime+.9);
+  }catch(e){}
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance('Új rendelés érkezett');
+    u.lang='hu-HU';u.rate=.92;speechSynthesis.speak(u);
+  }catch(e){}
+  if('Notification' in window&&Notification.permission==='granted'){
+    try{
+      const reg=await navigator.serviceWorker?.getRegistration();
+      if(reg){
+        await reg.showNotification('CsíTi Pizza – új rendelés',{
+          body:order?`#${order.id} – ${order.customer.name}`:'Új rendelés érkezett.',
+          icon:'/assets/pizzak/sajtos.jpg',
+          tag:'csiti-order-'+(order?.id||Date.now()),
+          renotify:true,
+          vibrate:[300,120,300],
+          data:{url:'/admin.html'}
+        });
+      }else{
+        new Notification('CsíTi Pizza – új rendelés',{body:'Új rendelés érkezett.'});
+      }
+    }catch(e){}
+  }
+}
+
+function b64ToUint8Array(s){
+  const pad='='.repeat((4-s.length%4)%4);
+  const b=(s+pad).replace(/-/g,'+').replace(/_/g,'/');
+  return Uint8Array.from(atob(b),c=>c.charCodeAt(0));
+}
+async function enableRealPush(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window))throw Error('A böngésző nem támogatja a push értesítést.');
+  const permission=await Notification.requestPermission();
+  if(permission!=='granted')throw Error('Az értesítést engedélyezni kell.');
+  const reg=await navigator.serviceWorker.register('/sw.js',{scope:'/'});
+  const {publicKey}=await api('/api/push-public-key');
+  let sub=await reg.pushManager.getSubscription();
+  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToUint8Array(publicKey)});
+  await api('/api/push-subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(sub)});
+}
+function unlockAudio(){
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;
+    audioCtx=audioCtx||new Ctx();
+    if(audioCtx.state==='suspended')audioCtx.resume();
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    g.gain.value=.0001;o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.05);
+  }catch(e){}
+}
+
+async function enableNotifications(){
+  soundOn=true;unlockAudio();
+  await enableRealPush();
+  await notifyOrder();
+  $('#sound').textContent='Hang és valódi push bekapcsolva';
+  toast('Push bekapcsolva. Háttérben a telefon rendszerhangja szól.');
+}
+async function start(){
+  $('#login').hidden=true;$('#panel').hidden=false;
+  try{await load()}catch(e){toast(e.message);return}
+  if(eventSource)eventSource.close();
+  eventSource=new EventSource('/api/stream?token='+encodeURIComponent(token));
+  if(pollTimer)clearInterval(pollTimer);pollTimer=setInterval(()=>load().catch(()=>{}),12000);
+  eventSource.addEventListener('new-order',e=>{
+    let order=null;try{order=JSON.parse(e.data)}catch(_){}
+    notifyOrder(order);toast('Új rendelés érkezett');load();
+  });
+}
+async function load(){
+  const {orders}=await api('/api/orders');
+  currentOrders=orders;
+  try{
+    const s=await api('/api/admin-stats');
+    if($('#todayOrders'))$('#todayOrders').textContent=s.todayOrders||0;
+    if($('#monthPizzas'))$('#monthPizzas').textContent=s.monthPizzas||0;
+    if($('#monthOrders'))$('#monthOrders').textContent=s.monthOrders||0;
+    if($('#currentOrdersCount'))$('#currentOrdersCount').textContent=s.totalCurrentOrders||0;
+  }catch(e){}
+  const newest=orders[0]?.id||null;
+  if(lastOrderId!==null&&newest&&newest!==lastOrderId)notifyOrder(orders[0]);
+  lastOrderId=newest;
+  const root=$('#orders');
+  root.innerHTML=orders.length?'':'<div class="empty">Nincs rendelés.</div>';
+  orders.forEach(o=>{
+    const cls=statusClass(o.status),e=document.createElement('article');
+    e.className=`order ${cls}`;
+    e.innerHTML=`
+      <div class="order-topline"><div><span class="status-badge ${cls}">${o.status}</span>
+      <h2>#${o.id} – ${o.customer.name}</h2><p class="order-time"><b>Rendelés ideje:</b> ${new Date(o.createdAt).toLocaleDateString('hu-HU')} ${new Date(o.createdAt).toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})}</p></div>
+      <div class="order-price">${money(o.total)}</div></div>
+      <p><b>Telefon:</b> ${o.customer.phone}<br><b>Átvétel:</b> ${o.customer.delivery}<br>
+      <b>Cím:</b> ${o.customer.address||'-'}<br><b>Fizetés:</b> ${o.customer.payment}</p>
+      <ul>${o.items.map(i=>`<li>${i.qty}× <b>${i.name}</b> ${i.size} cm
+      ${i.extras?.length?' – '+i.extras.map(x=>x.name).join(', '):''}
+      ${i.customExtra?'<br><b>Egyedi extra:</b> '+i.customExtra:''}
+      ${i.customText?'<br><b>Külön kérés:</b> '+i.customText:''}</li>`).join('')}</ul>
+      ${o.customer.note?`<p><b>Rendelési megjegyzés:</b> ${o.customer.note}</p>`:''}
+      <div class="actions">${['Készítés alatt','Kész','Átadva'].map(s=>`<button class="${o.status===s?'active-status':''}" data-status="${s}">${s}</button>`).join('')}
+      <button class="delete-order">Rendelés törlése</button></div>`;
+    e.querySelectorAll('[data-status]').forEach(b=>b.onclick=async()=>{
+      try{
+        await api('/api/orders/'+o.id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:b.dataset.status})});
+        await load();
+      }catch(err){toast(err.message)}
+    });
+    e.querySelector('.delete-order').onclick=async()=>{
+      if(!confirm(`Biztosan törlöd a #${o.id} rendelést?`))return;
+      try{await api('/api/orders/'+o.id,{method:'DELETE'});toast('Rendelés törölve');await load()}
+      catch(err){toast(err.message)}
+    };
+    root.appendChild(e);
+  });
+  renderSummary();
+}
+function renderSummary(){
+  const body=$('#summaryBody'),stats=$('#summaryStats'),orderBox=$('#summaryOrders');
+  if(!body||!stats||!orderBox)return;
+  const grouped=new Map();let total=0,active=0,delivered=0;
+  currentOrders.forEach(o=>{
+    o.status==='Átadva'?delivered++:active++;
+    o.items.forEach(i=>{
+      const extras=(i.extras||[]).map(x=>x.name).sort().join('|');const key=[i.name,i.size,extras,i.customExtra||'',i.customText||''].join('__'),q=Number(i.qty||1);
+      if(!grouped.has(key))grouped.set(key,{name:i.name,size:i.size,extras,customExtra:i.customExtra||'',customText:i.customText||'',qty:0,statuses:{}});
+      const row=grouped.get(key);row.qty+=q;row.statuses[o.status]=(row.statuses[o.status]||0)+q;total+=q;
+    });
+  });
+  stats.innerHTML=`<div class="summary-stat"><b>${currentOrders.length}</b><span>Rendelés</span></div>
+  <div class="summary-stat"><b>${total}</b><span>Pizza összesen</span></div>
+  <div class="summary-stat"><b>${active}</b><span>Aktív</span></div>
+  <div class="summary-stat"><b>${delivered}</b><span>Átadva</span></div>`;
+  const rows=[...grouped.values()].sort((a,b)=>a.name.localeCompare(b.name,'hu')||Number(a.size)-Number(b.size));
+  body.innerHTML=rows.length?rows.map(r=>`<tr><td><b>${r.name}</b></td><td>${r.size} cm</td>
+  <td><span class="qty-badge">${r.qty} db</span>${r.extras?`<small class="summary-detail">Extra: ${r.extras.replaceAll('|',', ')}</small>`:''}${r.customExtra?`<small class="summary-detail">Egyedi: ${r.customExtra}</small>`:''}${r.customText?`<small class="summary-detail">Kérés: ${r.customText}</small>`:''}</td><td>${Object.entries(r.statuses).map(([s,q])=>`${s}: ${q}`).join(', ')}</td></tr>`).join('')
+  :'<tr><td colspan="4" class="empty-cell">Nincs rendelés.</td></tr>';
+  orderBox.innerHTML=currentOrders.length?currentOrders.map(o=>`<div class="summary-order-card"><div><b>#${o.id} – ${o.customer.name}</b>
+  <p><b>${new Date(o.createdAt).toLocaleDateString('hu-HU')} ${new Date(o.createdAt).toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})}</b><br>${o.items.map(i=>`${i.qty}× ${i.name} (${i.size} cm)`).join(', ')}</p></div>
+  <span class="status-badge ${statusClass(o.status)}">${o.status}</span></div>`).join('')
+  :'<div class="empty">Nincs rendelés.</div>';
+}
+document.addEventListener('click',e=>{
+  const tab=e.target.closest('[data-admin-view]');if(!tab)return;
+  document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.admin-view').forEach(x=>x.classList.remove('active'));
+  tab.classList.add('active');$('#'+tab.dataset.adminView).classList.add('active');
+});
+$('#loginForm').onsubmit=async e=>{
+  e.preventDefault();
+  try{
+    const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:new FormData(e.target).get('password')})});
+    const j=await r.json();if(!r.ok)throw Error(j.error);
+    token=j.token;sessionStorage.setItem('csitiToken',token);start();
+  }catch(err){toast(err.message)}
+};
+$('#sound').onclick=()=>enableNotifications().catch(e=>toast(e.message));
+$('#refreshSummary').onclick=()=>load().then(()=>toast('Összesítő frissítve')).catch(e=>toast(e.message));
+if(token)start();
